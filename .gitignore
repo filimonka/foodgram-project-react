@@ -130,3 +130,5 @@ dmypy.json
 
 # .idea
 .idea
+.setup.config
+csv_to_db.py

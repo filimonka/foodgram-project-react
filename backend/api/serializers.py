@@ -3,9 +3,9 @@ from django.core.exceptions import ValidationError
 from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
 
+from .fields import Base64ToFile
 from recipe.models import (FavoriteRecipe, Ingredient, Recipe,
                            RecipeIngredients, ShoppingCart, Subscription, Tag)
-from .fields import Base64ToFile
 
 User = get_user_model()
 

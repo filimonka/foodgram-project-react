@@ -11,13 +11,15 @@ from rest_framework.permissions import (AllowAny, IsAuthenticated,
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from recipe.models import *
-
 from .calculator import create_shopping_list
 from .permissions import IsNotAuthor
-from .serializers import *
+from .serializers import (GetSubscriptionsSerializer, IngredientSerializer,
+                          RecipeSerializer, TagSerializer)
+from recipe.models import (FavoriteRecipe, Ingredient, Recipe,
+                           RecipeIngredients, ShoppingCart, Subscription, Tag)
 
 User = get_user_model()
+
 
 # render для отдачи файла
 class PassthroughRenderer(renderers.BaseRenderer):
@@ -77,7 +79,7 @@ class MyUserViewSet(MyClassAdditionalActions, UserViewSet):
         return super().additional_action(
             request, model, target_fieldname, kwarg_name
         )
- 
+
 # Страница подписок
     @action(
         methods=['GET', ],
@@ -97,7 +99,7 @@ class RecipeViewSet(MyClassAdditionalActions):
     queryset = Recipe.objects.all()
     pagination_classes = (PageNumberPagination, )
     page_size = 6
-    permission_classes = [IsAuthenticatedOrReadOnly,]
+    permission_classes = [IsAuthenticatedOrReadOnly, ]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     filterset_fields = (
         'author',
@@ -105,7 +107,10 @@ class RecipeViewSet(MyClassAdditionalActions):
         'id__favorite_dish',
         'id__cart_recipe',
     )
-    search_fields = ('^ingredients__ingredient_name', 'ingredients__ingredient_name')
+    search_fields = (
+        '^ingredients__ingredient_name',
+        'ingredients__ingredient_name'
+    )
 
     def perform_create(self, serializer):
         return serializer.save(author_id=self.request.user.id)
