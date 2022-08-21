@@ -1,11 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import filters, renderers, status
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import (IsAdminUser, IsAuthenticated,
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
@@ -18,7 +19,7 @@ from .serializers import *
 
 User = get_user_model()
 
-
+# render для отдачи файла
 class PassthroughRenderer(renderers.BaseRenderer):
     media_type = 'text/plain'
     format = '.txt'
@@ -27,6 +28,7 @@ class PassthroughRenderer(renderers.BaseRenderer):
         return data
 
 
+# Viewsets for users endpoints
 class MyClassAdditionalActions(ModelViewSet):
 
     def additional_action(
@@ -56,7 +58,7 @@ class MyClassAdditionalActions(ModelViewSet):
 
 
 class MyUserViewSet(MyClassAdditionalActions, UserViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly, ]
+    permission_classes = [AllowAny, ]
 
     @action(
         methods=['POST', 'DELETE'],
@@ -75,7 +77,8 @@ class MyUserViewSet(MyClassAdditionalActions, UserViewSet):
         return super().additional_action(
             request, model, target_fieldname, kwarg_name
         )
-
+ 
+# Страница подписок
     @action(
         methods=['GET', ],
         detail=False,
@@ -88,23 +91,26 @@ class MyUserViewSet(MyClassAdditionalActions, UserViewSet):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
+# viewsets for recipe endpoints
 class RecipeViewSet(MyClassAdditionalActions):
     serializer_class = RecipeSerializer
     queryset = Recipe.objects.all()
-    pagination_class = PageNumberPagination
+    pagination_classes = (PageNumberPagination, )
     page_size = 6
-    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminUser]
-    filter_backends = (filters.SearchFilter,)
+    permission_classes = [IsAuthenticatedOrReadOnly,]
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     filterset_fields = (
-        '^author',
-        '^tag',
-        '^is_favorited',
-        '^is_in_shopping_cart'
+        'author',
+        'tags__slug',
+        'id__favorite_dish',
+        'id__cart_recipe',
     )
+    search_fields = ('^ingredients__ingredient_name', 'ingredients__ingredient_name')
 
     def perform_create(self, serializer):
         return serializer.save(author_id=self.request.user.id)
 
+    # add/delete favorite
     @action(
         methods=['POST', 'DELETE'],
         detail=True,
@@ -123,6 +129,7 @@ class RecipeViewSet(MyClassAdditionalActions):
             kwarg_name='pk'
         )
 
+    # add/delete shopping_cart
     @action(
         methods=['POST', 'DELETE'],
         detail=True,
@@ -140,6 +147,7 @@ class RecipeViewSet(MyClassAdditionalActions):
             kwarg_name='pk',
         )
 
+    # download shopping_cart
     @action(
         methods=['GET'],
         detail=False,
@@ -156,7 +164,6 @@ class RecipeViewSet(MyClassAdditionalActions):
                 'ingredient__name', 'amount', 'ingredient__measurement_unit'
             )
         ingredients = ([ingredient for ingredient in ingredients])
-        print(ingredients)
         final_ingredient_count = create_shopping_list(ingredients)
         data_for_file = [
             f'{item} - {value[0]},{value[1]}'
@@ -171,13 +178,17 @@ class RecipeViewSet(MyClassAdditionalActions):
         return response
 
 
+# /tags
 class TagViewSet(ReadOnlyModelViewSet):
     serializer_class = TagSerializer
     queryset = Tag.objects.all()
 
 
+# /ingredients
 class IngredientViewSet(ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
     queryset = Ingredient.objects.all()
-    filter_backends = (filters.SearchFilter,)
-    filterset_fields = ('^name',)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
+    filterset_fields = ('name',)
+    search_fields = ('^name', 'name')
+    pagination_class = None

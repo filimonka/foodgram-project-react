@@ -5,7 +5,6 @@ from rest_framework import serializers
 
 from recipe.models import (FavoriteRecipe, Ingredient, Recipe,
                            RecipeIngredients, ShoppingCart, Subscription, Tag)
-
 from .fields import Base64ToFile
 
 User = get_user_model()
@@ -212,6 +211,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
 
 class GetSubscriptionsSerializer(serializers.BaseSerializer):
+
     def to_representation(self, instance):
         return {
             'id': instance['id'],
