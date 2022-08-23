@@ -1,7 +1,6 @@
-from distutils.command.install_egg_info import to_filename
 import django_filters.rest_framework as filters
 
-from recipe.models import Recipe, Tag, Ingredient
+from recipe.models import Ingredient, Recipe, Tag
 
 
 class RecipeFilter(filters.FilterSet):

@@ -17,7 +17,7 @@ SECRET_KEY = '(qsowcco7skm+aaezlzk*-2ydplp7m7j16%hi2(6tmpbxiup4@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend']
 
 
 # Application definition
@@ -29,13 +29,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'recipe.apps.RecipeConfig',
-    'api.apps.ApiConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
     'djoser',
-
+    'colorfield',
+    'recipe.apps.RecipeConfig',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -75,9 +75,9 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
-        'NAME': os.getenv('DB_NAME', 'test'),
-        'USER': os.getenv('POSTGRES_USER', 'test'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'test'),
+        'NAME': os.getenv('DB_NAME', 'postgres'),
+        'USER': os.getenv('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
         'HOST': os.getenv('DB_HOST', 'db'),
         'PORT': os.getenv('DB_PORT', '5432'),
     }
@@ -127,7 +127,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 FILE_URL = '/files/'
-FILEROOT = os.path.join(BASE_DIR, 'file')
+FILE_ROOT = os.path.join(BASE_DIR, 'files')
 
 
 REST_FRAMEWORK = {

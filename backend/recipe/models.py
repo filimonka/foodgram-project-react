@@ -1,3 +1,4 @@
+from colorfield.fields import ColorField
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -19,15 +20,18 @@ class Ingredient(models.Model):
 
 
 class Tag(models.Model):
+    COLOR_PALETTE = [
+        ("#FFFFFF", "white", ),
+        ("#000000", "black", ),
+    ]
     name = models.CharField(
         'Имя тега',
         unique=True,
         max_length=100,
     )
-    color = models.CharField(
-        'Цвет',
-        max_length=7,
+    color = ColorField(
         unique=True,
+        samples=COLOR_PALETTE
     )
     slug = models.SlugField(
         'tag slug',
