@@ -5,8 +5,10 @@ from django.core.exceptions import ValidationError
 from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
 
-from recipe.models import (FavoriteRecipe, Ingredient, Recipe,
-                           RecipeIngredients, ShoppingCart, Subscription, Tag)
+from recipe.models import (
+    FavoriteRecipe, Ingredient, Recipe,
+    RecipeIngredients, ShoppingCart, Subscription, Tag
+)
 
 from .fields import Base64ToFile
 

@@ -35,7 +35,6 @@ class PassthroughRenderer(renderers.BaseRenderer):
         return data
 
 
-# Viewsets for users endpoints
 class AdditionalActionViewSet(ModelViewSet):
 
     def additional_action(
@@ -86,7 +85,6 @@ class UserGetPostSubscriptionViewSet(AdditionalActionViewSet, UserViewSet):
             request, model, target_fieldname, kwarg_name
         )
 
-# Страница подписок
     @action(
         methods=['GET', ],
         detail=False,
@@ -99,7 +97,6 @@ class UserGetPostSubscriptionViewSet(AdditionalActionViewSet, UserViewSet):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
-# viewsets for recipe endpoints
 class RecipeViewSet(AdditionalActionViewSet):
     serializer_class = RecipeSerializer
     queryset = Recipe.objects.all()
@@ -163,12 +160,12 @@ class RecipeViewSet(AdditionalActionViewSet):
     def download_shopping_cart(self, request):
         user = request.user
         ingredients = RecipeIngredients.objects.prefetch_related(
-            'shoppingcart'
-            ).filter(
-            recipe__cart_recipe__user=user
-            ).values_list(
-                'ingredient__name', 'amount', 'ingredient__measurement_unit'
-            )
+            'shoppingcart').filter(
+                recipe__cart_recipe__user=user).values_list(
+                    'ingredient__name',
+                    'amount',
+                    'ingredient__measurement_unit'
+                )
         ingredients = [ingredient for ingredient in ingredients]
         final_ingredient_count = create_shopping_list(ingredients)
         data_for_file = [
@@ -184,14 +181,12 @@ class RecipeViewSet(AdditionalActionViewSet):
         return response
 
 
-# /tags
 class TagViewSet(ReadOnlyModelViewSet):
     serializer_class = TagSerializer
     queryset = Tag.objects.all()
     pagination_class = None
 
 
-# /ingredients
 class IngredientViewSet(ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
     queryset = Ingredient.objects.all()
