@@ -6,8 +6,10 @@ from djoser.views import UserViewSet
 from rest_framework import filters, renderers, status
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import (AllowAny, IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import (
+    AllowAny, IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+)
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
@@ -15,11 +17,12 @@ from recipe.models import (
     FavoriteRecipe, Ingredient, Recipe,
     RecipeIngredients, ShoppingCart, Subscription, Tag,
 )
+
 from .filters import IngredientFilter, RecipeFilter
 from .permissions import IsNotAuthor
 from .serializers import (
     GetSubscriptionsSerializer, IngredientSerializer,
-    RecipeSerializer, TagSerializer
+    RecipeSerializer, TagSerializer,
 )
 from .tools import create_shopping_list
 
@@ -65,7 +68,9 @@ class AdditionalActionViewSet(ModelViewSet):
 
 class UserGetPostSubscriptionViewSet(AdditionalActionViewSet, UserViewSet):
     permission_classes = [AllowAny, ]
-    http_method_names = ['get', 'post']
+    http_method_names = ['get', 'post', 'delete']
+    pagination_classes = (PageNumberPagination, )
+    page_size = 6
 
     @action(
         methods=['POST', 'DELETE'],
@@ -88,11 +93,16 @@ class UserGetPostSubscriptionViewSet(AdditionalActionViewSet, UserViewSet):
     @action(
         methods=['GET', ],
         detail=False,
-        permission_classes=[IsAuthenticated, ]
+        permission_classes=[IsAuthenticated, ],
     )
     def subscriptions(self, request):
         user = request.user
         queryset = Subscription.objects.filter(user=user).all()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = GetSubscriptionsSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
         serializer = GetSubscriptionsSerializer(queryset, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -100,7 +110,7 @@ class UserGetPostSubscriptionViewSet(AdditionalActionViewSet, UserViewSet):
 class RecipeViewSet(AdditionalActionViewSet):
     serializer_class = RecipeSerializer
     queryset = Recipe.objects.all()
-    http_method_names = ['get', 'post', 'patch']
+    http_method_names = ['get', 'post', 'patch', 'delete']
     pagination_classes = (PageNumberPagination, )
     page_size = 6
     permission_classes = [IsAuthenticatedOrReadOnly, ]
@@ -164,17 +174,22 @@ class RecipeViewSet(AdditionalActionViewSet):
                 recipe__cart_recipe__user=user).values_list(
                     'ingredient__name',
                     'amount',
-                    'ingredient__measurement_unit'
+                    'ingredient__measurement_unit',
                 )
-        ingredients = [ingredient for ingredient in ingredients]
-        final_ingredient_count = create_shopping_list(ingredients)
-        data_for_file = [
-            f'{item} - {value[0]},{value[1]}'
-            for item, value in final_ingredient_count.items()
+        final_ingredient_count = create_shopping_list(
+            [ingredient for ingredient in ingredients]
+        )
+        text = [
+            f'{name}: {amount}{measurement_unit}'
+            for name, (amount, measurement_unit)
+            in final_ingredient_count.items()
         ]
-        file = open('shopping_list.txt', 'w+')
-        file.writelines(data_for_file)
-        response = FileResponse(file, content_type='text/plain')
+        text = '\n'.join(text)
+        with open('files/shopping_list.txt', 'w') as file:
+            file.write(text)
+        with open('files/shopping_list.txt', 'r') as file:
+            file_data = file.read()
+        response = FileResponse(file_data, content_type='plain/txt')
         response['Content-Disposition'] = (
             'attachment; filename="shopping_list.txt"'
         )

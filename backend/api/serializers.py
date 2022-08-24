@@ -3,14 +3,13 @@ import collections
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from djoser.serializers import UserCreateSerializer
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 from recipe.models import (
     FavoriteRecipe, Ingredient, Recipe,
     RecipeIngredients, ShoppingCart, Subscription, Tag
 )
-
-from .fields import Base64ToFile
 
 User = get_user_model()
 
@@ -102,7 +101,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         source='recipe_ingredient',
         required=True,
     )
-    image = Base64ToFile(use_url=True, required=True)
+    image = Base64ImageField()
     tags = TagSerializer(many=True, read_only=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -188,6 +187,14 @@ class RecipeSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
+class RecipesForSubscriptions(serializers.ModelSerializer):
+    image = Base64ImageField()
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+
+
 class GetSubscriptionsSerializer(UserGetSerializer):
     id = serializers.ReadOnlyField(source='author.id')
     email = serializers.ReadOnlyField(source='author.email')
@@ -211,9 +218,11 @@ class GetSubscriptionsSerializer(UserGetSerializer):
         )
 
     def get_recipes(self, obj):
-        return Recipe.objects.filter(
+        instance = Recipe.objects.filter(
             author_id=obj.author.id
-        ).all().values('id', 'name', 'image', 'cooking_time')
+        ).all()
+        serializer = RecipesForSubscriptions(instance, many=True)
+        return serializer.data
 
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(author_id=obj.author.id).count()

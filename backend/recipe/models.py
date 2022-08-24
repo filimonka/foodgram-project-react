@@ -61,6 +61,8 @@ class Recipe(models.Model):
     )
     image = models.ImageField(
         'Фото',
+        upload_to='../media',
+
     )
     tags = models.ManyToManyField(
         Tag,
