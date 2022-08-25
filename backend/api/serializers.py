@@ -140,9 +140,9 @@ class RecipeSerializer(serializers.ModelSerializer):
             raise ValidationError(
                 'Tag передан в неверном формате'
             )
-        values_id_list = Tag.objects.all().values_list(flat=True)
+        queryset_values = Tag.objects.all().values_list(flat=True)
         for tag in value:
-            if tag not in values_id_list:
+            if tag not in queryset_values:
                 raise ValidationError(
                     f'Tag с id {tag} не найден, проверьте переданные данные'
                 )

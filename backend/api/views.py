@@ -7,8 +7,7 @@ from rest_framework import filters, renderers, status
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import (
-    AllowAny, IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
+    AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly,
 )
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
@@ -19,10 +18,10 @@ from recipe.models import (
 )
 
 from .filters import IngredientFilter, RecipeFilter
-from .permissions import IsNotAuthor
+from .permissions import IsNotAuthor, PutForbidden, UpdateForbidden
 from .serializers import (
     GetSubscriptionsSerializer, IngredientSerializer,
-    RecipeSerializer, TagSerializer,
+    RecipeSerializer, TagSerializer
 )
 from .tools import create_shopping_list
 
@@ -57,7 +56,7 @@ class AdditionalActionViewSet(ModelViewSet):
             connected_obj, created = model.objects.get_or_create(**data)
             if not created:
                 return Response(
-                    data={"errors": "Такая подписка уже существует"},
+                    data={'errors': 'Такая подписка уже существует'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             return Response(status=status.HTTP_201_CREATED)
@@ -67,10 +66,8 @@ class AdditionalActionViewSet(ModelViewSet):
 
 
 class UserGetPostSubscriptionViewSet(AdditionalActionViewSet, UserViewSet):
-    permission_classes = [AllowAny, ]
-    http_method_names = ['get', 'post', 'delete']
-    pagination_classes = (PageNumberPagination, )
-    page_size = 6
+    permission_classes = [AllowAny, UpdateForbidden]
+    pagination_classes = (PageNumberPagination,)
 
     @action(
         methods=['POST', 'DELETE'],
@@ -110,10 +107,8 @@ class UserGetPostSubscriptionViewSet(AdditionalActionViewSet, UserViewSet):
 class RecipeViewSet(AdditionalActionViewSet):
     serializer_class = RecipeSerializer
     queryset = Recipe.objects.all()
-    http_method_names = ['get', 'post', 'patch', 'delete']
     pagination_classes = (PageNumberPagination, )
-    page_size = 6
-    permission_classes = [IsAuthenticatedOrReadOnly, ]
+    permission_classes = [IsAuthenticatedOrReadOnly, PutForbidden]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     filterset_class = RecipeFilter
     search_fields = (
