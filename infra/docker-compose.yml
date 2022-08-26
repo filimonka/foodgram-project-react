@@ -13,7 +13,7 @@ services:
       - ./.env
   
   backend:
-    image: filimonka/foodgram_backend:latest    
+    image: filimonka/foodgram_backend:v5.26.2022
     restart: always
 
     volumes:
