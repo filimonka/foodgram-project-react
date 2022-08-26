@@ -10,7 +10,7 @@ services:
       - LANGUAGE:'ru_RU.UTF-8'
       - LC_ALL:'ru_RU.UTF-8'
     env_file:
-      - ./nginx/.env
+      - ./.env
   
   backend:
     image: filimonka/foodgram_backend:latest    
@@ -22,7 +22,7 @@ services:
     depends_on:
       - db
     env_file:
-      ./nginx/.env
+      ./.env
   frontend:
     image: filimonka/foodgram_frontend:latest
     volumes:
