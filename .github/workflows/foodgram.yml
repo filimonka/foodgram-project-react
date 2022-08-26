@@ -32,12 +32,12 @@ jobs:
             sudo docker compose stop
             sudo docker compose rm backend
             touch .env
-            echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> /home/infra/.env
-            echo DB_NAME=${{ secrets.DB_NAME }} >> /home/infra/.env
-            echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> /home/infra/.env
-            echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> /home/infra/.env
-            echo DB_HOST=${{ secrets.DB_HOST }} >> /home/infra/.env
-            echo DB_PORT=${{ secrets.DB_PORT }} >> /home/infra/.env
+            echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> infra/.env
+            echo DB_NAME=${{ secrets.DB_NAME }} >> infra/.env
+            echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> infra/.env
+            echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> infra/.env
+            echo DB_HOST=${{ secrets.DB_HOST }} >> infra/.env
+            echo DB_PORT=${{ secrets.DB_PORT }} >> infra/.env
             
             sudo docker compose up -d
             sudo docker compose exec -T backend python manage.py migrate
