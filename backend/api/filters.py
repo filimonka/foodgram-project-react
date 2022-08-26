@@ -1,6 +1,9 @@
+from django.contrib.auth import get_user_model
 import django_filters.rest_framework as filters
 
 from recipe.models import Ingredient, Recipe, Tag
+
+User = get_user_model()
 
 
 class RecipeFilter(filters.FilterSet):
@@ -12,11 +15,16 @@ class RecipeFilter(filters.FilterSet):
     is_in_shopping_cart = filters.BooleanFilter(
         method='get_is_in_shopping_cart'
     )
+    author = filters.ModelChoiceFilter(
+        field_name='author',
+        to_field_name='id',
+        queryset=User.objects.all())
 
     class Meta:
         Model = Recipe
         fields = [
             'tags',
+            'author',
             'is_favorited',
             'is_in_shopping_cart',
         ]
