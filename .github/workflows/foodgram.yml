@@ -1,6 +1,6 @@
 name: Foodgram workflow
 
-on: [put]
+on: [push]
 
 jobs:
   login_to_docker_hub_and_build:
