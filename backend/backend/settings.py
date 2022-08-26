@@ -17,7 +17,7 @@ SECRET_KEY = '(qsowcco7skm+aaezlzk*-2ydplp7m7j16%hi2(6tmpbxiup4@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend', '158.160.9.78']
+ALLOWED_HOSTS = ['foodgramforreview.hopto.org', 'localhost', '127.0.0.1', 'backend', '158.160.9.78']
 
 
 # Application definition
