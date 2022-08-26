@@ -22,7 +22,7 @@ services:
     depends_on:
       - db
     env_file:
-  
+      ./nginx/.env
   frontend:
     image: filimonka/foodgram_frontend:latest
     volumes:
@@ -41,7 +41,7 @@ services:
     depends_on:
       - backend
       - frontend
-    
+
 volumes:
   static_value:
   media_value:
