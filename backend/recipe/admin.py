@@ -1,7 +1,7 @@
 from colorfield.fields import ColorField, ColorWidget
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from django.db import models
+from django.contrib.auth.admin import UserAdmin
 
 from .models import Ingredient, Recipe, RecipeIngredients, Tag
 
@@ -34,6 +34,12 @@ class TagAdmin(admin.ModelAdmin):
     }
 
 
+class UserAdminWithNewFilters(UserAdmin):
+    list_filter = ('username', 'email', 'first_name', 'last_name')
+
+
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Tag, TagAdmin)
+admin.site.unregister(User)
+admin.site.register(User, UserAdminWithNewFilters)

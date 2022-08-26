@@ -1,5 +1,5 @@
-from django.contrib.auth import get_user_model
 import django_filters.rest_framework as filters
+from django.contrib.auth import get_user_model
 
 from recipe.models import Ingredient, Recipe, Tag
 

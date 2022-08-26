@@ -7,14 +7,15 @@ from rest_framework import filters, renderers, status
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import (
-    AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly,
+    AllowAny, IsAuthenticated,
+    IsAuthenticatedOrReadOnly
 )
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from recipe.models import (
     FavoriteRecipe, Ingredient, Recipe,
-    RecipeIngredients, ShoppingCart, Subscription, Tag,
+    RecipeIngredients, ShoppingCart, Subscription, Tag
 )
 
 from .filters import IngredientFilter, RecipeFilter
@@ -171,12 +172,11 @@ class RecipeViewSet(AdditionalActionViewSet):
                     'amount',
                     'ingredient__measurement_unit',
                 )
-        final_ingredient_count = create_shopping_list(
-            [ingredient for ingredient in ingredients]
-        )
+        ingredients = [ingredient for ingredient in ingredients]
+        final_ingredient_count = create_shopping_list(ingredients)
         text = [
-            f'{name}: {amount}{measurement_unit}'
-            for name, (amount, measurement_unit)
+            f'{name}: {value[0]}{value[1]}'
+            for name, value
             in final_ingredient_count.items()
         ]
         text = '\n'.join(text)
