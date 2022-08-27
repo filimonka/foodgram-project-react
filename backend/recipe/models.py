@@ -18,6 +18,10 @@ class Ingredient(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
+
 
 class Tag(models.Model):
     COLOR_PALETTE = [
@@ -31,7 +35,8 @@ class Tag(models.Model):
     )
     color = ColorField(
         unique=True,
-        samples=COLOR_PALETTE
+        samples=COLOR_PALETTE,
+        verbose_name='Цвет в hex формате'
     )
     slug = models.SlugField(
         'tag slug',
@@ -41,12 +46,17 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Тэг'
+        verbose_name_plural = 'Тэги'
+
 
 class Recipe(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='recipes',
+        verbose_name='Автор'
     )
     name = models.CharField(
         'Название блюда',
@@ -67,16 +77,22 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         related_name='recipes',
+        verbose_name='Тэги'
+        
     )
     ingredients = models.ManyToManyField(
         Ingredient,
         related_name='recipes',
         through='RecipeIngredients',
+        verbose_name='Ингредиенты'
     )
     pub_date = models.DateTimeField(
         'дата публикации',
         auto_now_add=True,
     )
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         ordering = ('-pub_date',)
@@ -89,16 +105,22 @@ class RecipeIngredients(models.Model):
         Recipe,
         related_name='recipe_ingredient',
         on_delete=models.CASCADE,
+        verbose_name='Рецепт'
     )
     ingredient = models.ForeignKey(
         Ingredient,
         related_name='recipe_ingredient',
         on_delete=models.CASCADE,
+        verbose_name='Ингредиент'
     )
     amount = models.PositiveIntegerField(
         'Количество',
         default=0
     )
+
+    class Meta:
+        verbose_name = 'Ингредиент в рецепте'
+        verbose_name_plural = 'Ингредиенты в рецептах'
 
 
 class FavoriteRecipe(models.Model):
@@ -106,6 +128,7 @@ class FavoriteRecipe(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='favorite_dish',
+        verbose_name='Пользователь',
     )
     recipe = models.ForeignKey(
         Recipe,
@@ -114,12 +137,17 @@ class FavoriteRecipe(models.Model):
         verbose_name='Избранный рецепт',
     )
 
+    class Meta:
+        verbose_name = 'Избранный рецепт'
+        verbose_name_plural = 'Избранные рецепты'
+
 
 class ShoppingCart(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='shopping_cart',
+        verbose_name='Пользователь',
     )
     recipe = models.ForeignKey(
         Recipe,
@@ -127,6 +155,10 @@ class ShoppingCart(models.Model):
         related_name='cart_recipe',
         verbose_name='Список покупок'
     )
+
+    class Meta:
+        verbose_name = 'Список покупок'
+        verbose_name_plural = 'Списки покупок'
 
 
 class Subscription(models.Model):
@@ -142,3 +174,7 @@ class Subscription(models.Model):
         related_name='cook',
         verbose_name='Звезда кулинарии',
     )
+
+    class Meta:
+        verbose_name = 'Подписка на автора'
+        verbose_name_plural = 'Подписки на авторов'
