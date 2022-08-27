@@ -7,8 +7,7 @@
 
 Проект запущен по адресу http://foodgramforreview.hopto.org/
 Админ http://foodgramforreview.hopto.org/admin/ 
-admin_username: admin
-admin_password: admin
+
 
 Tech_stack:_
 
