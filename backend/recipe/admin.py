@@ -1,4 +1,5 @@
 from colorfield.fields import ColorField, ColorWidget
+from django.forms import BaseInlineFormSet, ValidationError
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
@@ -11,8 +12,27 @@ from .models import (
 User = get_user_model()
 
 
+class RecipeIngredientFormset(BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+        count = 0
+        for form in self.forms:
+            print(form)
+            try:
+                if form.cleaned_data:
+                    count += 1
+            except AttributeError:
+                pass
+            if count < 1:
+                raise ValidationError(
+                    'В рецепт нужно добавить хотя бы один ингредиент'
+                )
+
+
 class RecipeIngredientInline(admin.StackedInline):
     model = RecipeIngredients
+    extra = 1
+    formset = RecipeIngredientFormset
 
 
 class RecipeAdmin(admin.ModelAdmin):
