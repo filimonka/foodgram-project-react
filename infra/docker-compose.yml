@@ -13,9 +13,8 @@ services:
       - ./.env
   
   backend:
-    image: filimonka/foodgram_backend:v5.26.2022
+    image: filimonka/foodgram_backend:v1.27.2022
     restart: always
-
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/
