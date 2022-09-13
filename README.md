@@ -22,6 +22,6 @@ Tech_stack:_
 
 __Django 3.2, REST API, ReDoc, Docker__
 
-_Author:_
+_Backend author:_
 
 __filimonka https://github.com/filimonka__
