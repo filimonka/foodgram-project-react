@@ -17,7 +17,6 @@ class RecipeIngredientFormset(BaseInlineFormSet):
         super().clean()
         count = 0
         for form in self.forms:
-            print(form)
             try:
                 if form.cleaned_data:
                     count += 1
@@ -52,9 +51,7 @@ class IngredientAdmin(admin.ModelAdmin):
 
 
 class TagAdmin(admin.ModelAdmin):
-    formfield_overrides = {
-      ColorField: {'widget': ColorWidget},
-    }
+    pass
 
 
 class UserAdminWithNewFilters(UserAdmin):

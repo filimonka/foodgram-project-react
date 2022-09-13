@@ -24,10 +24,6 @@ class Ingredient(models.Model):
 
 
 class Tag(models.Model):
-    COLOR_PALETTE = [
-        ("#FFFFFF", "white", ),
-        ("#000000", "black", ),
-    ]
     name = models.CharField(
         'Имя тега',
         unique=True,
@@ -35,7 +31,6 @@ class Tag(models.Model):
     )
     color = ColorField(
         unique=True,
-        samples=COLOR_PALETTE,
         verbose_name='Цвет в hex формате'
     )
     slug = models.SlugField(
@@ -77,8 +72,7 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         related_name='recipes',
-        verbose_name='Тэги'
-        
+        verbose_name='Тэги',
     )
     ingredients = models.ManyToManyField(
         Ingredient,
