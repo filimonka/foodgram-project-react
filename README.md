@@ -12,9 +12,42 @@
 
 ## Доступ к проекту:
 
-Проект запущен по адресу http://foodgramforreview.hopto.org/
-На данный момент проект отлично работает для ноутбука и компьютера, но при доступе с мобильных устройств невозможно добавить рецепт.
-В ближайшее время планирую найти и исправить эту ошибку.
+Клонировать репозиторий на свой компьютер 
+Перейти в папку infra: cd infra/
+
+Создать .env файл в папке infra, с параметрами:
+
+    DB_NAME=postgres
+    POSTGRES_USER=<your postgres_username>
+    POSTGRES_PASSWORD=<your postgres_password>
+    DB_HOST=db
+    DB_PORT=5432
+
+Запустить docker-compose:
+
+```docker-compose up -d```
+
+Выполнить миграции:
+
+```docker-compose exec web python manage.py migrate```
+
+Собрать staticfiles:
+
+```docker-compose exec web python manage.py collectstatic --no-input```
+
+Создать пользователя с правами администратора:
+
+```docker-compose exec web python manage.py createsuperuser```
+
+Загрузить данные:
+
+```docker-compose exec backend python manage.py loaddata data.json```
+
+На странице http://localhost/api/recipes/ откроется главная страница проекта
+
+Перейти на страницу http://localhost/redoc/ для получения информации обо всех доступных эндпойнтах
+
+Либо на страницу http://localhost/admin для доступа к админ-зоне проекта
 
 
 
