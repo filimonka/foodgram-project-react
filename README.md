@@ -39,6 +39,18 @@
 
 ```docker-compose exec backend python manage.py createsuperuser```
 
+Удалить contenttypes:
+
+```docker-compose exec backend python manage.py shell ```
+
+В открывшейся консоли вести :
+
+```from django.contrib.contenttypes.models import ContentType```
+
+```ContentType.objects.all().delete()```
+
+```quit()```
+
 Загрузить данные:
 
 ```docker-compose exec backend python manage.py loaddata data.json```
