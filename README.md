@@ -29,11 +29,11 @@
 
 Выполнить миграции:
 
-```docker-compose exec web python manage.py migrate```
+```docker-compose exec backend python manage.py migrate```
 
 Собрать staticfiles:
 
-```docker-compose exec web python manage.py collectstatic --no-input```
+```docker-compose exec backend python manage.py collectstatic --no-input```
 
 Создать пользователя с правами администратора:
 
